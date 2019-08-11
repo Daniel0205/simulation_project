@@ -71,7 +71,7 @@ def torneado(env, nombre, servidor):
                 tiempo_atencion = random.uniform(TIEMPO_TORNEADO[0],TIEMPO_TORNEADO[1])
                 print("ATENCIONNNNNNNNNN ",tiempo_atencion)
                 yield env.timeout(tiempo_atencion)
-                if(nombre.find('Pieza B')):
+                if(nombre.find('Pieza B')!=-1):
                         PIEZASB_TORNEADAS+= 1
                 else:
                         PIEZASA_TORNEADAS+=1
@@ -89,7 +89,7 @@ env = simpy.Environment()
 torno = simpy.Resource(env, capacity=1)
 env.process(llegadaA(env, LIMITE_PIEZAS_A, torno))
 env.process(llegadaB(env, LIMITE_PIEZAS_B, torno))
-env.run(until=10)
+env.run(until=12)
 
 print("Cola máxima ",MAX_COLA)
 print("Piezas A torneadas: ",PIEZASA_TORNEADAS)
