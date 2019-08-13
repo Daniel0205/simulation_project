@@ -20,10 +20,15 @@ MAX_COLA = 0
 ESPERA_CLIENTES = numpy.array([])
 PIEZASA_TORNEADAS = 0
 PIEZASB_TORNEADAS = 0
+PIEZASA_CREADAS = 0
+PIEZASB_CREADAS = 0
+TIEMPO_TOTAL_TORNEADO = 0
 
 def llegadaA(env,  contador):
-    j=0
-    while  PIEZASA_TORNEADAS+PIEZASB_TORNEADAS<LIMITE_PIEZAS-1:  
+        global PIEZASA_CREADAS
+        j=0
+        while  PIEZASA_TORNEADAS+PIEZASB_TORNEADAS<LIMITE_PIEZAS-1:
+                PIEZASA_CREADAS+=1
                 c = torneado(env, 'Pieza A  %02d' % j, contador)
                 env.process(c)
                 tiempo_llegada = random.uniform(LLEGADA_PIEZASA[0],LLEGADA_PIEZASA[1])
@@ -34,8 +39,10 @@ def llegadaA(env,  contador):
 
 
 def llegadaB(env, contador):
-    i=0
-    while  PIEZASA_TORNEADAS+PIEZASB_TORNEADAS<LIMITE_PIEZAS:                
+        global PIEZASB_CREADAS
+        i=0
+        while  PIEZASA_TORNEADAS+PIEZASB_TORNEADAS<LIMITE_PIEZAS:
+                PIEZASB_CREADAS+=1
                 c = torneado(env, 'Pieza B %02d' % i, contador)
                 env.process(c)
                 tiempo_llegada = random.uniform(LLEGADA_PIEZASB[0],LLEGADA_PIEZASB[1])
@@ -54,6 +61,7 @@ def torneado(env, nombre, servidor):
     global ESPERA_CLIENTES   
     global PIEZASB_TORNEADAS
     global PIEZASA_TORNEADAS
+    global TIEMPO_TOTAL_TORNEADO
 
     #Atendemos a los clientes (retorno del yield)
     #With ejecuta un iterador sin importar si hay excepciones o no
@@ -79,6 +87,7 @@ def torneado(env, nombre, servidor):
                         PIEZASB_TORNEADAS+= 1
                 else:
                         PIEZASA_TORNEADAS+=1
+                TIEMPO_TOTAL_TORNEADO+=tiempo_atencion
 
                 print('%7.2f'%(env.now), " Sale la pieza ",nombre)
 
@@ -95,6 +104,9 @@ env.process(llegadaA(env, torno))
 env.process(llegadaB(env, torno))
 env.run()
 
+print('\n\nTiempo total de simulacion: %7.2f'%(env.now))
+print('Tiempo de torno sin utilizar: %7.2f'%((env.now)-TIEMPO_TOTAL_TORNEADO))
+print('Piezas en el almacen',(PIEZASA_CREADAS+PIEZASB_CREADAS-PIEZASA_TORNEADAS-PIEZASB_TORNEADAS))
 print("Cola máxima ",MAX_COLA)
 print("Piezas A torneadas: ",PIEZASA_TORNEADAS)
 print("Piezas B torneadas: ",PIEZASB_TORNEADAS)
