@@ -4,9 +4,10 @@
 import random
 import simpy
 import numpy
+from datetime import datetime
 
 #Datos de la simulación
-SEMILLA = 40 #Semilla generador
+SEMILLA = datetime.now() #Semilla generador
 LIMITE_PIEZAS_A = 4000 #Vamos a simular 10 clientes
 LIMITE_PIEZAS_B = 4000 #Vamos a simular 10 clientes
 LLEGADA_PIEZASA = [5, 7] #Clientes llegan cada 10 segundos en una distribución uniforme
@@ -89,7 +90,7 @@ env = simpy.Environment()
 torno = simpy.Resource(env, capacity=1)
 env.process(llegadaA(env, LIMITE_PIEZAS_A, torno))
 env.process(llegadaB(env, LIMITE_PIEZAS_B, torno))
-env.run(until=12)
+env.run(until=1400)
 
 print("Cola máxima ",MAX_COLA)
 print("Piezas A torneadas: ",PIEZASA_TORNEADAS)
