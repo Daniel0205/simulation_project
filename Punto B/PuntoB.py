@@ -20,11 +20,16 @@ MAX_COLA = 0
 ESPERA_CLIENTES = numpy.array([])
 PIEZASA_TORNEADAS = 0
 PIEZASB_TORNEADAS = 0
+PIEZASA_CREADAS = 0
+PIEZASB_CREADAS = 0
+TIEMPO_TOTAL_TORNEADO = 0
 
 def llegadaA(env,  contador):
-    i = 0
+        global PIEZASA_CREADAS
+        i = 0
 
-    while  PIEZASB_TORNEADAS<75:  
+        while  PIEZASB_TORNEADAS<75:  
+                PIEZASA_CREADAS+=1
                 c = torneado(env, 'Pieza A  %02d' % i, contador)
                 env.process(c)
                 tiempo_llegada = random.uniform(LLEGADA_PIEZASA[0],LLEGADA_PIEZASA[1])
@@ -34,7 +39,9 @@ def llegadaA(env,  contador):
 
 
 def llegadaB(env,numero, contador):
-        for i in range(numero):                 
+        global PIEZASB_CREADAS
+        for i in range(numero):
+                PIEZASB_CREADAS+=1                 
                 c = torneado(env, 'Pieza B %02d' % i, contador)
                 env.process(c)
                 tiempo_llegada = random.uniform(LLEGADA_PIEZASB[0],LLEGADA_PIEZASB[1])
@@ -52,6 +59,8 @@ def torneado(env, nombre, servidor):
     global ESPERA_CLIENTES   
     global PIEZASB_TORNEADAS
     global PIEZASA_TORNEADAS
+    global TIEMPO_TOTAL_TORNEADO
+
 
     #Atendemos a los clientes (retorno del yield)
     #With ejecuta un iterador sin importar si hay excepciones o no
@@ -77,6 +86,7 @@ def torneado(env, nombre, servidor):
                         PIEZASB_TORNEADAS+= 1
                 else:
                         PIEZASA_TORNEADAS+=1
+                TIEMPO_TOTAL_TORNEADO+=tiempo_atencion
 
                 print('%7.2f'%(env.now), " Sale la pieza ",nombre)
 
